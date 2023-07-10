@@ -1,5 +1,7 @@
 {
   "private": true,
+  "name": "abandon",
+  "version": "1.0.0",
   "author": "yycxx <yyi99yy@163.com>",
   "scripts": {
     "dev": "max dev",
@@ -13,8 +15,11 @@
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
     "@ant-design/pro-components": "^2.4.4",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/plugin-proposal-decorators": "^7.22.5",
     "@umijs/max": "^4.0.71",
-    "antd": "^5.4.0"
+    "antd": "^5.6.3",
+    "babel-plugin-import": "^1.13.6"
   },
   "devDependencies": {
     "@types/react": "^18.0.33",
