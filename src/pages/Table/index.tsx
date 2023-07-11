@@ -7,6 +7,7 @@ import {
   ProDescriptionsItemProps,
   ProTable,
 } from '@ant-design/pro-components';
+// @ts-ignore
 import { Button, Divider, Drawer, message } from 'antd';
 import React, { useRef, useState } from 'react';
 import CreateForm from './components/CreateForm';
