@@ -22,7 +22,7 @@ const Login: React.FC = () => {
 
                 method: 'POST',
                 data: {
-                    name: values?.name,
+                    username: values?.username,
                     password: values.password
                 },
                 // 传递给登录接口的数据，根据您的需求传递相应的数据
@@ -60,7 +60,7 @@ const Login: React.FC = () => {
             });
             if (response.code === 200) {
                 // 如果响应的状态码为200，表示注册成功
-                message.success('🎉 🎉 🎉 注册成功');
+                message.success('注册成功');
                 // 在界面上显示一个成功的消息
                 return;
             }
