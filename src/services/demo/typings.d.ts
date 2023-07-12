@@ -2,6 +2,15 @@
 // 该文件由 OneAPI 自动生成，请勿手动修改！
 
 declare namespace API {
+
+  type LoginParams = {
+    username?: string;
+    name?: string;
+    email?: string;
+    password?: string;
+    autoLogin?: boolean;
+    type?: string;
+  };
   interface PageInfo {
     /** 
 1 */
