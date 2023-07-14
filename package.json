@@ -27,6 +27,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
     "@ant-design/pro-components": "^2.4.4",
+    "@icon-park/react": "^1.4.2",
     "@umijs/max": "^4.0.72",
     "antd": "^4.20.7"
   },
@@ -41,5 +42,11 @@
     "prettier-plugin-organize-imports": "^3.2.2",
     "prettier-plugin-packagejson": "^2.4.3",
     "typescript": "^5.0.3"
-  }
+  },
+  "name": "abandon-web",
+  "description": "`@umijs/max` 模板项目，更多功能参考 [Umi Max 简介](https://umijs.org/docs/max/introduce)",
+  "version": "1.0.0",
+  "main": ".eslintrc.js",
+  "license": "ISC",
+  "keywords": []
 }
