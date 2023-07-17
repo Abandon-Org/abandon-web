@@ -33,7 +33,7 @@ const Login: React.FC = () => {
 
                 message.success('登录成功');
                 // 在界面上显示一个成功的消息
-
+                localStorage.setItem("AbandonToken",response.data.token);
                 const urlParams = new URL(window.location.href).searchParams;
                 history.push(urlParams.get('redirect') || '/');
                 // 使用history.push()方法进行页面跳转，重定向到redirect参数指定的页面，如果redirect参数不存在则重定向到根路径'/'

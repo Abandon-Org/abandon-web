@@ -1,95 +1,61 @@
 import {PageLoading, Settings as LayoutSettings} from '@ant-design/pro-components';
-import type {RunTimeLayoutConfig} from '@umijs/max';
 import {history} from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
 import {errorConfig} from './requestErrorConfig';
 import React from 'react';
+import {currentUser as queryCurrentUser, LoginUser} from './services/auth';
+import {message} from "antd";
+import CONFIG from "../config/server_config";
 
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
  * */
 export async function getInitialState(): Promise<{
     settings?: Partial<LayoutSettings>;
+    currentUser?: LoginUser;
     loading?: boolean;
+    fetchUserInfo?: () => Promise<LoginUser | undefined>;
 }> {
     const fetchUserInfo = async () => {
+        // 定义一个异步函数 fetchUserInfo，用于获取用户信息。
         try {
-            const token = localStorage.getItem("AbandonToken");
+            const token = localStorage.getItem(CONFIG.JWT_KEY);
+            // 从本地存储（localStorage）中获取名为 "AbandonToken" 的令牌。
             if (!token) {
-                history.push(loginPath);
+                // 检查令牌是否存在。如果令牌不存在，使用 history.push(loginPath) 将页面重定向到登录页。
+                history.push(CONFIG.LOGIN_PATH);
                 return;
             }
+            const msg = await queryCurrentUser({token});
+            //使用获取到的令牌调用 queryCurrentUser 函数来获取用户信息。
+            if (msg.code !== 200) {
+                //检查返回的用户信息中的状态码是否为 200。如果不是 200，显示信息提示，并抛出错误。
+                message.info(msg.msg);
+                throw msg.msg;
+            }
+            return msg.data;
         } catch (error) {
-            history.push(loginPath);
+            //捕获可能出现的错误。将页面重定向到登录页。
+            history.push(CONFIG.LOGIN_PATH);
         }
         return undefined;
     };
     // 如果不是登录页面，执行
     const {location} = history;
-    if (location.pathname !== loginPath) {
+    if (location.pathname !== CONFIG.LOGIN_PATH) {
         const currentUser = await fetchUserInfo();
         return {
+            fetchUserInfo,
+            currentUser,
             settings: defaultSettings,
         };
     }
 
     return {
+        fetchUserInfo,
         settings: defaultSettings,
     };
 }
-
-// ProLayout 支持的api https://procomponents.ant.design/components/layout
-export const layout: RunTimeLayoutConfig = ({}) => {
-    return {
-        siderWidth: 216,
-        token: {
-            colorBgAppListIconHover: 'rgba(0,0,0,0.06)',
-            colorTextAppListIconHover: 'rgba(255,255,255,0.95)',
-            colorTextAppListIcon: 'rgba(255,255,255,0.85)',
-            sider: {
-                colorBgCollapsedButton: '#fff',
-                colorTextCollapsedButtonHover: 'rgba(0,0,0,0.65)',
-                colorTextCollapsedButton: 'rgba(0,0,0,0.45)',
-                colorMenuBackground: '#232137',
-                colorBgMenuItemCollapsedHover: 'rgba(0,0,0,0.06)',
-                colorBgMenuItemCollapsedSelected: 'rgba(0,0,0,0.15)',
-                colorBgMenuItemCollapsedElevated: 'rgba(0,0,0,0.85)',
-                colorMenuItemDivider: 'rgba(255,255,255,0.15)',
-                colorBgMenuItemHover: 'rgba(0,0,0,0.06)',
-                colorBgMenuItemSelected: '#1670ff',
-                colorTextMenuSelected: '#fff',
-                colorTextMenuItemHover: 'rgba(255,255,255,0.75)',
-                colorTextMenu: 'rgba(255,255,255,0.75)',
-                colorTextMenuSecondary: 'rgba(255,255,255,0.65)',
-                colorTextMenuTitle: 'rgba(255,255,255,0.95)',
-                colorTextMenuActive: 'rgba(255,255,255,0.95)',
-                colorTextSubMenuSelected: '#fff',
-            },
-        },
-        layoutBgImgList: [
-            {
-                src: 'https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/D2LWSqNny4sAAAAAAAAAAAAAFl94AQBr',
-                left: 85,
-                bottom: 100,
-                height: '303px',
-            },
-            {
-                src: 'https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/C2TWRpJpiC0AAAAAAAAAAAAAFl94AQBr',
-                bottom: -68,
-                right: -45,
-                height: '303px',
-            },
-            {
-                src: 'https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/F6vSTbj8KpYAAAAAAAAAAAAAFl94AQBr',
-                bottom: 0,
-                left: 0,
-                width: '331px',
-            },
-        ],
-        links: [],
-        menuHeaderRender: undefined,
-    };
-};
 
 /**
  * @name request 配置，可以配置错误处理

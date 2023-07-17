@@ -17,10 +17,8 @@ const Settings: LayoutSettings & {
   fixedHeader: false,
   fixSiderbar: true,
   colorWeak: false,
-  title: '玩转接口测试',
+  title: '',
   pwa: false,
-  logo: '/logo.svg',
-  iconfontUrl: '//at.alicdn.com/t/font_915840_kom9s5w2t6k.js',
 };
 
 export default Settings;
