@@ -36,7 +36,7 @@ export async function getInitialState(): Promise<{
             return msg.data;
         } catch (error) {
             //捕获可能出现的错误。将页面重定向到登录页。
-            history.push(CONFIG.LOGIN_PATH);
+            history.push(CONFIG.WEB_URL+CONFIG.LOGIN_PATH);
         }
         return undefined;
     };
