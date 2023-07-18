@@ -31,24 +31,25 @@
 // },
 
 export default [
-  { path: '/login', layout: false, component: './Login' },
-  {
-    path: '/',
-    redirect: '/home',
-  },
-  {
-    name: '首页',
-    path: '/home',
-    component: './Home',
-  },
-  {
-    name: '权限演示',
-    path: '/access',
-    component: './Access',
-  },
-  {
-    name: 'CRUD 示例',
-    path: '/table',
-    component: './Table',
-  },
+    {
+        name: '首页',
+        path: '/home',
+        component: './Home',
+    },
+    {
+        name: '权限演示',
+        path: '/access',
+        component: './Access',
+    },
+    {
+        name: 'CRUD 示例',
+        path: '/table',
+        component: './Table',
+    },
+    {path: '/login', layout: false, component: './Login'},
+    {
+        path: '/',
+        redirect: '/home',
+    },
+    {path: '*', component: './404', exact: false}, // 将通配符路由放在最后，配置 404 页面组件，exact: false 表示匹配所有未定义的路由
 ];
