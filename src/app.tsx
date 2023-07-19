@@ -1,11 +1,12 @@
 import {PageLoading, Settings as LayoutSettings} from '@ant-design/pro-components';
 import {history} from '@umijs/max';
-import defaultSettings from '../config/defaultSettings';
 import {errorConfig} from './requestErrorConfig';
 import React from 'react';
 import {currentUser as queryCurrentUser, LoginUser} from './services/auth';
-import {message} from "antd";
+import {ConfigProvider, Empty, message} from "antd";
 import CONFIG from "../config/server_config";
+import defaultSettings from "../config/defaultSettings";
+import {RunTimeLayoutConfig} from "@@/plugin-layout/types";
 
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
@@ -36,7 +37,7 @@ export async function getInitialState(): Promise<{
             return msg.data;
         } catch (error) {
             //捕获可能出现的错误。将页面重定向到登录页。
-            history.push(CONFIG.WEB_URL+CONFIG.LOGIN_PATH);
+            history.push(CONFIG.WEB_URL + CONFIG.LOGIN_PATH);
         }
         return undefined;
     };
@@ -56,6 +57,26 @@ export async function getInitialState(): Promise<{
         settings: defaultSettings,
     };
 }
+
+
+export const layout: RunTimeLayoutConfig = ({initialState, setInitialState}) => {
+    return {
+        siderWidth: 216,// 侧边栏的宽度
+        // 自定义 403 页面
+        childrenRender: (children) => {
+            if (initialState?.loading) return <PageLoading/>;
+            return (
+                <ConfigProvider
+                    renderEmpty={() => <Empty imageStyle={{height: 160}}
+                                              description="暂无数据"/>}>
+                    {children}
+                </ConfigProvider>
+            );
+        },
+        ...initialState?.settings,// 将 initialState.settings 中的其他配置项合并到布局中
+    };
+};
+
 
 /**
  * @name request 配置，可以配置错误处理

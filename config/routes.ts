@@ -32,7 +32,7 @@
 
 export default [
     {
-        name: '首页',
+        name: 'Home',
         path: '/home',
         component: './Home',
     },
