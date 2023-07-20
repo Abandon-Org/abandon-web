@@ -19,7 +19,7 @@ const Settings: LayoutSettings & {
   fixSiderbar: true, // 是否固定侧边栏，这里设置为 true，即固定侧边栏
   colorWeak: false, // 是否开启色弱模式，这里设置为 false，即不开启
   logo: 'logo.svg', // 设置项目的 Logo 图片，路径为 'logo.svg'
-  title: 'YY接口测试平台', // 设置项目的标题
+  title: '测试平台', // 设置项目的标题
   pwa: false, // 是否开启 Progressive Web App（渐进式网络应用），这里设置为 false，即不开启
 };
 
