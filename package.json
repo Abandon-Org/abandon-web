@@ -29,7 +29,8 @@
     "@ant-design/pro-components": "^2.4.4",
     "@icon-park/react": "^1.4.2",
     "@umijs/max": "^4.0.72",
-    "antd": "^4.20.7"
+    "antd": "^4.20.7",
+    "react-ace": "^10.1.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.33",
