@@ -5,7 +5,7 @@ import {PageContainer} from "@ant-design/pro-components";
 import EditableTable from "@/components/Table/EditableTable";
 import JSONAceEditor from "@/components/CodeEditor/AceEditor/JSONAceEditor";
 import {Props} from "@floating-ui/react-dom-interactions";
-import {list} from "postcss";
+import FormData from "@/components/CodeEditor/AceEditor/FormData";
 
 const {Option} = Select;
 const {TabPane} = Tabs;
@@ -22,6 +22,8 @@ const Postman: React.FC = () => {
     const [rawType, setRawType] = useState('JSON');
     const [editor, setEditor] = useState(null);
     const [response, setResponse] = useState({});
+    const [body, setBody] = useState(null);
+    const [formData, setFormData] = useState([]);
     const selectBefore = (
         <Select
             value={method}
@@ -53,6 +55,19 @@ const Postman: React.FC = () => {
             setEditableRowKeys(keys);
         }
     };
+
+    const resColumns = [
+        {
+            title: 'KEY',
+            dataIndex: 'key',
+            key: 'key',
+        },
+        {
+            title: 'VALUE',
+            dataIndex: 'value',
+            key: 'value',
+        },
+    ];
 
     const onRequest = async () => {
         if (url === '') {
@@ -153,6 +168,46 @@ const Postman: React.FC = () => {
         setRawType(key);
     };
 
+    const toTable = (field: string) => {
+        if (!response[field]) {
+            return [];
+        }
+        const temp = JSON.parse(response[field]);
+        return Object.keys(temp).map((key) => ({
+            key,
+            value: temp[key],
+        }));
+    };
+
+    const getBody = bd => {
+        if (bd === 'none') {
+            return <div style={{height: '20vh', lineHeight: '20vh', textAlign: 'center'}}>
+                This request does not have a body
+            </div>
+        }
+        if (bd === 'form-data') {
+            return <FormData dataSource={formData} setDataSource={setFormData}/>
+        }
+        if (bd === 'binary') {
+            return <div style={{height: '20vh', lineHeight: '20vh', textAlign: 'center'}}>
+                binary占位！，先给常用功能做出
+            </div>
+        }
+        if (bd === 'GraphQL') {
+            return <div style={{height: '20vh', lineHeight: '20vh', textAlign: 'center'}}>
+                GraphQL占位！，先给常用功能做出
+            </div>
+        }
+        return <Row style={{marginTop: 12}}>
+            <Col span={24}>
+                <Card bodyStyle={{padding: 0}}>
+                    <JSONAceEditor value={body} onChange={e => setBody(e)} height="20vh" setEditor={setEditor}/>
+                </Card>
+            </Col>
+        </Row>
+    }
+
+
     const menu = (
         <Menu>
             <Menu.Item key="Text">
@@ -172,7 +227,6 @@ const Postman: React.FC = () => {
             </Menu.Item>
         </Menu>
     );
-
 
 
 
@@ -202,6 +256,15 @@ const Postman: React.FC = () => {
                             size="large"
                             style={{marginRight: 16, float: 'right'}}
                         >
+                            Save{' '}
+                        </Button>
+                        <Button
+                            onClick={onRequest}
+                            loading={loading}
+                            type="primary"
+                            size="large"
+                            style={{marginRight: 16, float: 'right'}}
+                        >
                             Send{' '}
                         </Button>
                     </Col>
@@ -216,8 +279,8 @@ const Postman: React.FC = () => {
                                 setDataSource={setParamsData}
                                 extra={joinUrl}
                                 editableKeys={editableKeys}
-                                setEditableRowKeys={setEditableRowKeys}
-                            />
+                                setEditableRowKeys={setEditableRowKeys}>
+                            </EditableTable>
                         </TabPane>
                         <TabPane tab="Headers" key="2">
                             <EditableTable
@@ -226,8 +289,8 @@ const Postman: React.FC = () => {
                                 dataSource={headers}
                                 setDataSource={setHeaders}
                                 editableKeys={headersKeys}
-                                setEditableRowKeys={setHeadersKeys}
-                            />
+                                setEditableRowKeys={setHeadersKeys}>
+                            </EditableTable>
                         </TabPane>
                         <TabPane tab="Body" key="3">
                             <Row>
@@ -245,6 +308,8 @@ const Postman: React.FC = () => {
                                     <Radio value={'binary'}>binary</Radio>
                                     <Radio value={'GraphQL'}>GraphQL</Radio>
                                 </Radio.Group>
+                                {/*如果 bodyType 等于 1，则会渲染一个下拉菜单，菜单内有一个链接，显示 rawType 的值和一个向下的箭头图标。
+                                当用户点击链接时，会显示下拉菜单的内容，而不会触发页面跳转。*/}
                                 {bodyType === 'raw' ? (
                                     <Dropdown style={{marginLeft: 8}} overlay={menu} trigger={['click']}>
                                         <a onClick={(e) => e.preventDefault()}>
@@ -253,6 +318,7 @@ const Postman: React.FC = () => {
                                     </Dropdown>
                                 ) : null}
                             </Row>
+                            {getBody(bodyType)}
                         </TabPane>
                     </Tabs>
                 </Row>
