@@ -14,11 +14,15 @@ interface JSONAceEditorProps extends IAceEditorProps {
 
 export default class JSONAceEditor extends Component<JSONAceEditorProps> {
     componentDidMount() {
+        // 设置编辑器实例到 props 中提供的 setEditor 函数
         this.props.setEditor(this.refs.aceEditor);
+
+        // 添加自动完成功能
         addCompleter({
             getCompletions: (editor, session, pos, prefix, callback) => {
                 callback(
                     null,
+                    // 使用传入的 tables 数据来生成自动完成列表
                     (this.props.tables || []).map((v) => ({ name: v, value: v }))
                 );
             },

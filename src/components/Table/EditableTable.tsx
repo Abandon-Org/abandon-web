@@ -1,21 +1,24 @@
 import React, { useEffect } from 'react';
 import { EditableProTable } from '@ant-design/pro-table';
 
+// 定义表格列配置的接口
 interface TableColumn {
     title: string;
     key: string;
     dataIndex: string;
-    // Add any other properties based on your actual column configuration
+    // 可以根据实际情况添加其他属性
 }
 
+// 定义表格数据项的接口
 interface TableDataItem {
     id: number;
     key: string;
     value: string;
     description: string;
-    // Add any other properties based on your actual data structure
+    // 可以根据实际情况添加其他属性
 }
 
+// 定义可编辑表格的属性接口
 interface EditableTableProps {
     columns: TableColumn[];
     dataSource: TableDataItem[];
@@ -26,6 +29,7 @@ interface EditableTableProps {
     extra?: (recordList: TableDataItem[]) => void;
 }
 
+// 可编辑表格组件
 const EditableTable: React.FC<EditableTableProps> = ({
                                                          columns,
                                                          dataSource,
@@ -35,6 +39,7 @@ const EditableTable: React.FC<EditableTableProps> = ({
                                                          setEditableRowKeys,
                                                          extra,
                                                      }) => {
+    // 当数据源变化时，更新可编辑行的键值列表
     useEffect(() => {
         setEditableRowKeys(dataSource.map((v) => v.id));
     }, [dataSource]);

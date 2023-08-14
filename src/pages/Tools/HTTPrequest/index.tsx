@@ -5,7 +5,8 @@ import {PageContainer} from "@ant-design/pro-components";
 import EditableTable from "@/components/Table/EditableTable";
 import JSONAceEditor from "@/components/CodeEditor/AceEditor/JSONAceEditor";
 import {Props} from "@floating-ui/react-dom-interactions";
-import FormData from "@/components/CodeEditor/AceEditor/FormData";
+import FormData from "@/components/Table/FormDataTable";
+import XForm from "@/components/Table/xFormTable";
 
 const {Option} = Select;
 const {TabPane} = Tabs;
@@ -15,15 +16,26 @@ const Postman: React.FC = () => {
     const [bodyType, setBodyType] = useState('');
     const [method, setMethod] = useState('GET');
     const [loading, setLoading] = useState(false);
-    const [paramsData, setParamsData] = useState([]);
-    const [headers, setHeaders] = useState([]);
-    const [headersKeys, setHeadersKeys] = useState(() => headers.map((item) => item.id));
-    const [editableKeys, setEditableRowKeys] = useState(() => paramsData.map((item) => item.id));
     const [rawType, setRawType] = useState('JSON');
     const [editor, setEditor] = useState(null);
     const [response, setResponse] = useState({});
     const [body, setBody] = useState(null);
+
+    // 数据定义---------
+    // headers数据定义
+    const [headers, setHeaders] = useState([]);
+    const [headersKeys, setHeadersKeys] = useState(() => headers.map((item) => item.id));
+    // params数据定义
+    const [paramsData, setParamsData] = useState([]);
+    const [editableKeys, setEditableRowKeys] = useState(() => paramsData.map((item) => item.id));
+    // formdata数据定义
     const [formData, setFormData] = useState([]);
+    const [formDataKeys, setFormDataKeys] = useState(() => formData.map((item) => item.id));
+    // xform数据定义
+    const [xform, setxForm] = useState([]);
+    const [xformKeys, setxFormKeys] = useState(() => formData.map((item) => item.id));
+
+    // 请求方法下拉选择框
     const selectBefore = (
         <Select
             value={method}
@@ -37,6 +49,7 @@ const Postman: React.FC = () => {
         </Select>
     );
 
+    // 拆分 URL 并更新 paramsData 和 editableKeys 状态
     const splitUrl = (nowUrl: string) => {
         const split = nowUrl.split('?');
         if (split.length < 2) {
@@ -49,7 +62,7 @@ const Postman: React.FC = () => {
                 const [key, value] = item.split('=');
                 const now = Date.now();
                 keys.push(now + idx + 10);
-                newParams.push({ key, value, id: now + idx + 10, description: '' });
+                newParams.push({key, value, id: now + idx + 10, description: ''});
             });
             setParamsData(newParams);
             setEditableRowKeys(keys);
@@ -69,6 +82,7 @@ const Postman: React.FC = () => {
         },
     ];
 
+    // 请求事件处理
     const onRequest = async () => {
         if (url === '') {
             notification.error({
@@ -76,8 +90,43 @@ const Postman: React.FC = () => {
             });
             return;
         }
+        setLoading(true);
+        const params = {
+            method,
+            url,
+            body: bodyType === 'form-data' ? JSON.stringify(formData) : body,
+            body_type: bodyType,
+            headers: getHeaders(),
+        };
+        if (bodyType === 'none') {
+            params.body = null;
+        }
+        console.log(method)
+        console.log(url)
+        console.log(headers)
+        console.log(body)
+        console.log(bodyType)
+        console.log(formData)
+        console.log(xform)
+        // const res = await httpRequest(params);
+        setLoading(false);
+        // if (auth.response(res, true)) {
+        //     setResponse(res.data);
+        // }
     };
 
+    const getHeaders = () => {
+        const result = {};
+        headers.forEach((item) => {
+            if (item.key !== '') {
+                result[item.key] = item.value;
+            }
+        });
+        return result;
+    };
+
+
+    // 拼接 URL
     const joinUrl = (data: []) => {
         let tempUrl = url.split('?')[0];
         data.forEach((item, idx) => {
@@ -94,7 +143,7 @@ const Postman: React.FC = () => {
     };
 
 
-    const columns = ({ columnType, setEditableRowKeys, onDelete }: Props): Column[] => {
+    const columns = ({columnType, onDelete}: Props): Column[] => {
         return [
             {
                 title: 'KEY',
@@ -112,19 +161,13 @@ const Postman: React.FC = () => {
                 dataIndex: 'description',
             },
             {
-                title: '操作',
+                title: 'OPTION',
                 valueType: 'option',
                 render: (text: string, record: []) => {
                     return (
                         <>
-                            <EditTwoTone
-                                style={{ cursor: 'pointer' }}
-                                onClick={() => {
-                                    setEditableRowKeys([record.id]);
-                                }}
-                            />
                             <DeleteTwoTone
-                                style={{ cursor: 'pointer', marginLeft: 8 }}
+                                style={{cursor: 'pointer', marginLeft: 8}}
                                 onClick={() => {
                                     onDelete(columnType, record.id);
                                 }}
@@ -137,9 +180,10 @@ const Postman: React.FC = () => {
         ];
     };
 
+    // TabExtra函数，根据响应数据显示状态和时间
     const tabExtra = (response: ResponseData): React.ReactNode | null => {
         return response && response.response ? (
-            <div style={{ marginRight: 16 }}>
+            <div style={{marginRight: 16}}>
       <span>
         Status:
         <span
@@ -156,18 +200,20 @@ const Postman: React.FC = () => {
                 ? STATUS[response.response.status_code].text
                 : ''}
         </span>
-        <span style={{ marginLeft: 8, marginRight: 8 }}>
-          Time: <span style={{ color: '#67C23A' }}>{response.response.cost}</span>
+        <span style={{marginLeft: 8, marginRight: 8}}>
+          Time: <span style={{color: '#67C23A'}}>{response.response.cost}</span>
         </span>
       </span>
             </div>
         ) : null;
     };
 
+    // 点击下拉菜单项时更新 Raw Type
     const onClickMenu = (key: string) => {
         setRawType(key);
     };
 
+    // 根据响应字段生成数据表格
     const toTable = (field: string) => {
         if (!response[field]) {
             return [];
@@ -179,6 +225,7 @@ const Postman: React.FC = () => {
         }));
     };
 
+    // 根据 Body 类型生成不同的显示内容
     const getBody = bd => {
         if (bd === 'none') {
             return <div style={{height: '20vh', lineHeight: '20vh', textAlign: 'center'}}>
@@ -186,7 +233,13 @@ const Postman: React.FC = () => {
             </div>
         }
         if (bd === 'form-data') {
-            return <FormData dataSource={formData} setDataSource={setFormData}/>
+            return <FormData
+                columns={columns('FormData')}
+                dataSource={formData}
+                setDataSource={setFormData}
+                editableKeys = {formDataKeys}
+                setEditableRowKeys = {setFormDataKeys}>
+            </FormData>
         }
         if (bd === 'binary') {
             return <div style={{height: '20vh', lineHeight: '20vh', textAlign: 'center'}}>
@@ -197,6 +250,15 @@ const Postman: React.FC = () => {
             return <div style={{height: '20vh', lineHeight: '20vh', textAlign: 'center'}}>
                 GraphQL占位！，先给常用功能做出
             </div>
+        }
+        if (bd === 'x-www-form-urlencoded') {
+            return <XForm
+                columns={columns('XForm')}
+                dataSource={xform}
+                setDataSource={setxForm}
+                editableKeys = {xformKeys}
+                setEditableRowKeys = {setxFormKeys}>
+            </XForm>
         }
         return <Row style={{marginTop: 12}}>
             <Col span={24}>
@@ -229,9 +291,7 @@ const Postman: React.FC = () => {
     );
 
 
-
-
-        // Add other event handlers here...
+    // Add other event handlers here...
     return (
         <PageContainer title="在线HTTP测试工具">
             <Card>
