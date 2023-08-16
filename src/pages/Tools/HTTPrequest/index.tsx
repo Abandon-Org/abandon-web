@@ -7,6 +7,8 @@ import JSONAceEditor from "@/components/CodeEditor/AceEditor/JSONAceEditor";
 import {Props} from "@floating-ui/react-dom-interactions";
 import FormData from "@/components/Table/FormDataTable";
 import XForm from "@/components/Table/xFormTable";
+import {httpRequest} from "@/services/request";
+import auth from "@/utils/auth";
 
 const {Option} = Select;
 const {TabPane} = Tabs;
@@ -69,6 +71,7 @@ const Postman: React.FC = () => {
         }
     };
 
+    //response
     const resColumns = [
         {
             title: 'KEY',
@@ -94,25 +97,41 @@ const Postman: React.FC = () => {
         const params = {
             method,
             url,
-            body: bodyType === 'form-data' ? JSON.stringify(formData) : body,
+            body,
             body_type: bodyType,
             headers: getHeaders(),
         };
-        if (bodyType === 'none') {
-            params.body = null;
+
+        try {
+            // 如果类型为none，则body为null
+            if (bodyType === 'none') {
+                params.body = null;
+            }
+            // 如果类型为raw，则body为json
+            if (bodyType === 'raw') {
+                params.body = JSON.parse(body);
+            }
+            // 如果类型为form-data，则body为formdata，类型为[{},{}]
+            if (bodyType === 'form-data') {
+                params.body = formData;
+            }
+            // 如果类型为xform，则body为xform，类型为[{},{}]
+            if (bodyType === 'x-www-form-urlencoded') {
+                params.body = xform;
+            }
+            // 发送异步请求
+            const res = await httpRequest(params);
+            setLoading(false);
+
+            if (auth.response(res, true)) {
+                setResponse(res.data);
+            }
+        } catch (error) {
+            console.error('请求异常:', error);
+            notification.error({
+                message: '请求发生异常，请检查输入值是否符合要求。',
+            });
         }
-        console.log(method)
-        console.log(url)
-        console.log(headers)
-        console.log(body)
-        console.log(bodyType)
-        console.log(formData)
-        console.log(xform)
-        // const res = await httpRequest(params);
-        setLoading(false);
-        // if (auth.response(res, true)) {
-        //     setResponse(res.data);
-        // }
     };
 
     const getHeaders = () => {
@@ -389,8 +408,8 @@ const Postman: React.FC = () => {
                                 <JSONAceEditor
                                     readOnly={true}
                                     setEditor={setEditor}
-                                    language={response.response && response.response_headers.indexOf("json") > -1 ? 'json' : 'text'}
-                                    value={response.response && typeof response.response === 'object' ? JSON.stringify(response.response, null, 2) : response.response || ''}
+                                    language={response.response_data && response.response_headers.indexOf("json") > -1 ? 'json' : 'text'}
+                                    value={response.response_data && typeof response.response_data === 'object' ? JSON.stringify(response.response_data, null, 2) : response.response_data || ''}
                                     height="30vh"
                                 />
                             </TabPane>
