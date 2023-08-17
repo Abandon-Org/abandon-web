@@ -13,6 +13,12 @@ import auth from "@/utils/auth";
 const {Option} = Select;
 const {TabPane} = Tabs;
 
+const STATUS = {
+    200: {color: '#67C23A', text: 'OK'},
+    401: {color: '#F56C6C', text: 'unauthorized'},
+    400: {color: '#F56C6C', text: 'Bad Request'},
+};
+
 const Postman: React.FC = () => {
     const [url, setUrl] = useState('');
     const [bodyType, setBodyType] = useState('');
@@ -198,29 +204,60 @@ const Postman: React.FC = () => {
             },
         ];
     };
+    interface ResponseData {
+        response_data?: {
+            status_code: string;
+            cost: string;
+            // Other response properties
+        };
+        // Other response properties
+    }
+
+    interface StatusItem {
+        color: string;
+        text: string;
+        // Other status properties
+    }
+
+    interface StatusMap {
+        [key: string]: StatusItem;
+    }
+
+    interface TabExtraProps {
+        response: ResponseData | undefined;
+    }
+
+    const STATUS: StatusMap = {
+        // Define your STATUS mapping here
+        // Example:
+        '200': { color: 'green', text: 'OK' },
+        '400': { color: 'red', text: 'Bad Request' },
+        // Add more status codes
+    };
 
     // TabExtra函数，根据响应数据显示状态和时间
-    const tabExtra = (response: ResponseData): React.ReactNode | null => {
-        return response && response.response ? (
-            <div style={{marginRight: 16}}>
+    const tabExtra = ({ response }: TabExtraProps): ReactNode | null => {
+        console.log(response)
+        return response && response.response_data ? (
+            <div style={{ marginRight: 16 }}>
       <span>
         Status:
         <span
             style={{
-                color: STATUS[response.response.status_code]
-                    ? STATUS[response.response.status_code].color
+                color: STATUS[response.response_data.status_code]
+                    ? STATUS[response.response_data.status_code].color
                     : '#F56C6C',
                 marginLeft: 8,
                 marginRight: 8,
             }}
         >
-          {response.response.status_code}{' '}
-            {STATUS[response.response.status_code]
-                ? STATUS[response.response.status_code].text
+          {response.response_data.status_code}{' '}
+            {STATUS[response.response_data.status_code]
+                ? STATUS[response.response_data.status_code].text
                 : ''}
         </span>
-        <span style={{marginLeft: 8, marginRight: 8}}>
-          Time: <span style={{color: '#67C23A'}}>{response.response.cost}</span>
+        <span style={{ marginLeft: 8, marginRight: 8 }}>
+          Time: <span style={{ color: '#67C23A' }}>{response.response_data.cost}</span>
         </span>
       </span>
             </div>
