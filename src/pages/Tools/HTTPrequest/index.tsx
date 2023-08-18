@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Button, Card, Input, Radio, Row, Select, Tabs, Col, Dropdown, notification, Table, Menu} from 'antd';
-import {DeleteTwoTone, DownOutlined, EditTwoTone} from '@ant-design/icons';
+import {DeleteTwoTone, DownOutlined} from '@ant-design/icons';
 import {PageContainer} from "@ant-design/pro-components";
 import EditableTable from "@/components/Table/EditableTable";
 import JSONAceEditor from "@/components/CodeEditor/AceEditor/JSONAceEditor";
@@ -26,7 +26,10 @@ const Postman: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [rawType, setRawType] = useState('JSON');
     const [editor, setEditor] = useState(null);
-    const [response, setResponse] = useState({});
+    const [response, setResponse] = useState({
+        response_data: undefined,
+        response_headers: undefined
+    });
     const [body, setBody] = useState(null);
 
     // 数据定义---------
@@ -133,7 +136,6 @@ const Postman: React.FC = () => {
                 setResponse(res.data);
             }
         } catch (error) {
-            console.error('请求异常:', error);
             notification.error({
                 message: '请求发生异常，请检查输入值是否符合要求。',
             });
@@ -204,10 +206,11 @@ const Postman: React.FC = () => {
             },
         ];
     };
+
     interface ResponseData {
         response_data?: {
             status_code: string;
-            cost: string;
+            elapsed_time: string;
             // Other response properties
         };
         // Other response properties
@@ -230,36 +233,31 @@ const Postman: React.FC = () => {
     const STATUS: StatusMap = {
         // Define your STATUS mapping here
         // Example:
-        '200': { color: 'green', text: 'OK' },
-        '400': { color: 'red', text: 'Bad Request' },
+        '200': {color: '#67C23A', text: 'OK'},
+        '400': {color: 'red', text: 'Bad Request'},
         // Add more status codes
     };
 
     // TabExtra函数，根据响应数据显示状态和时间
-    const tabExtra = ({ response }: TabExtraProps): ReactNode | null => {
-        console.log(response)
+    const tabExtra = (response: Response | null): JSX.Element | null => {
         return response && response.response_data ? (
             <div style={{ marginRight: 16 }}>
-      <span>
-        Status:
-        <span
-            style={{
-                color: STATUS[response.response_data.status_code]
-                    ? STATUS[response.response_data.status_code].color
-                    : '#F56C6C',
-                marginLeft: 8,
-                marginRight: 8,
-            }}
-        >
-          {response.response_data.status_code}{' '}
-            {STATUS[response.response_data.status_code]
-                ? STATUS[response.response_data.status_code].text
-                : ''}
-        </span>
-        <span style={{ marginLeft: 8, marginRight: 8 }}>
-          Time: <span style={{ color: '#67C23A' }}>{response.response_data.cost}</span>
-        </span>
-      </span>
+            <span>
+                Status:
+                <span
+                    style={{
+                        color: STATUS[response.status_code]?.color || '#67C23A',
+                        marginLeft: 8,
+                        marginRight: 8,
+                    }}
+                >
+                    {response.status_code}{' '}
+                    {STATUS[response.status_code]?.text || ''}
+                </span>
+                <span style={{ marginLeft: 8, marginRight: 8 }}>
+                    Time: <span style={{ color: '#67C23A' }}>{response.elapsed_time}</span>
+                </span>
+            </span>
             </div>
         ) : null;
     };
@@ -293,8 +291,8 @@ const Postman: React.FC = () => {
                 columns={columns('FormData')}
                 dataSource={formData}
                 setDataSource={setFormData}
-                editableKeys = {formDataKeys}
-                setEditableRowKeys = {setFormDataKeys}>
+                editableKeys={formDataKeys}
+                setEditableRowKeys={setFormDataKeys}>
             </FormData>
         }
         if (bd === 'binary') {
@@ -312,8 +310,8 @@ const Postman: React.FC = () => {
                 columns={columns('XForm')}
                 dataSource={xform}
                 setDataSource={setxForm}
-                editableKeys = {xformKeys}
-                setEditableRowKeys = {setxFormKeys}>
+                editableKeys={xformKeys}
+                setEditableRowKeys={setxFormKeys}>
             </XForm>
         }
         return <Row style={{marginTop: 12}}>
@@ -473,5 +471,4 @@ const Postman: React.FC = () => {
         </PageContainer>
     );
 };
-
 export default Postman;
