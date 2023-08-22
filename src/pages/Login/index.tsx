@@ -95,7 +95,7 @@ const Login: React.FC = () => {
                 >
                     <Tabs activeKey={type} onChange={setType} centered>
                         <Tabs.TabPane key="account" tab="登录"/>
-                        <Tabs.TabPane key="register" tab="注册"/>
+                        {/*<Tabs.TabPane key="register" tab="注册"/>*/}
                     </Tabs>
                     {type === 'account' && (
                         <>
