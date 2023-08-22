@@ -170,6 +170,12 @@ export default [
             },
         ],
     },
+    {
+        path: '/admin',
+        component: '@/pages/Admin',
+        name: '用户管理',
+        access: 'isAdmin', // 只有管理员可以访问
+    },
     // 通配符路由，配置 404 页面组件，exact: false 表示匹配所有未定义的路由
     { path: '*', component: './404', exact: false },
 ];
