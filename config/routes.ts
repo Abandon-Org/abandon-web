@@ -71,6 +71,7 @@ export default [
     {
         name: '接口测试',
         path: '/apitest',
+        access: 'isUser',
         routes: [
             // 重定向到 /apitest/testcase
             {
@@ -120,6 +121,7 @@ export default [
     {
         name: '在线工具',
         path: '/tools',
+        access: 'isUser',
         routes: [
             // 重定向到 /tools/HTTPrequest
             {
@@ -138,6 +140,7 @@ export default [
     {
         name: 'Mock配置',
         path: '/mock',
+        access: 'isUser',
         component: './Mock',
     },
     // 资源管理页面及子菜单
@@ -171,10 +174,22 @@ export default [
         ],
     },
     {
-        path: '/admin',
-        component: '@/pages/Admin',
-        name: '用户管理',
+        path: '/backstage',
+        name: '后台管理',
         access: 'isAdmin', // 只有管理员可以访问
+        routes: [
+            // 重定向
+            {
+                path: '/backstage',
+                redirect: '/backstage/usermanage',
+            },
+            // 环境配置页面
+            {
+                path: '/backstage/usermanage',
+                name: '用户管理',
+                component: '@/pages/Backstage/Usermanage',
+            },
+        ],
     },
     // 通配符路由，配置 404 页面组件，exact: false 表示匹配所有未定义的路由
     { path: '*', component: './404', exact: false },

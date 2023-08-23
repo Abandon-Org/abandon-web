@@ -4,11 +4,14 @@ import {LoginForm, ProFormCheckbox, ProFormText} from '@ant-design/pro-form';
 import {message, Tabs} from 'antd';
 import React, {useState} from 'react';
 import CONFIG from "../../../config/server_config";
+import {useDispatch} from "@umijs/plugins/libs/dva";
+import {setUser} from "@/models/userSlice";
 
 
 const Login: React.FC = () => {
     const [type, setType] = useState<string>('account');
     // 在这里声明一个名为type的状态变量，并初始化为'account'
+    const [loggedIn, setLoggedIn] = useState(false); // 添加一个状态来表示是否已
 
     const handleSubmit = async (values: API.LoginParams) => {
         // 定义一个名为handleSubmit的异步函数，接受一个名为values的参数，类型为API.LoginParams
@@ -31,9 +34,11 @@ const Login: React.FC = () => {
             if (response.code === 200) {
                 // 如果响应的状态码为200，表示登录成功
 
+                setLoggedIn(true); // 登录成功后更新登录状态为 true
                 message.success('登录成功');
                 // 在界面上显示一个成功的消息
                 localStorage.setItem("AbandonToken",response.data.token);
+
                 const urlParams = new URL(window.location.href).searchParams;
                 history.push(urlParams.get('redirect') || '/');
                 // 使用history.push()方法进行页面跳转，重定向到redirect参数指定的页面，如果redirect参数不存在则重定向到根路径'/'
@@ -66,8 +71,13 @@ const Login: React.FC = () => {
             }
             message.error(response.msg);
             // 如果注册失败，显示一个错误消息
+
+            if (!loggedIn) {
+                return null; // 如果未登录，暂时不渲染任何内容
+            }
         }
     };
+
 
 
     return (

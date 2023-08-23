@@ -28,9 +28,11 @@
     "@ant-design/icons": "^5.0.1",
     "@ant-design/pro-components": "^2.4.4",
     "@icon-park/react": "^1.4.2",
+    "@reduxjs/toolkit": "^1.9.5",
     "@umijs/max": "^4.0.72",
     "antd": "^4.20.7",
-    "react-ace": "^10.1.0"
+    "react-ace": "^10.1.0",
+    "react-redux": "^8.1.2"
   },
   "devDependencies": {
     "@types/react": "^18.0.33",
