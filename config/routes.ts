@@ -71,7 +71,7 @@ export default [
     {
         name: '接口测试',
         path: '/apitest',
-        access: 'isUser',
+        access: 'isUserOrLeader',
         routes: [
             // 重定向到 /apitest/testcase
             {
@@ -121,7 +121,7 @@ export default [
     {
         name: '在线工具',
         path: '/tools',
-        access: 'isUser',
+        access: 'isUserOrLeader',
         routes: [
             // 重定向到 /tools/HTTPrequest
             {
@@ -140,7 +140,7 @@ export default [
     {
         name: 'Mock配置',
         path: '/mock',
-        access: 'isUser',
+        access: 'isUserOrLeader',
         component: './Mock',
     },
     // 资源管理页面及子菜单
@@ -176,7 +176,7 @@ export default [
     {
         path: '/backstage',
         name: '后台管理',
-        access: 'isAdmin', // 只有管理员可以访问
+        access: 'isAdminOrLeader', // 只有管理员可以访问
         routes: [
             // 重定向
             {
