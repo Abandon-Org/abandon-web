@@ -1,6 +1,5 @@
 export default function access(initialState: { currentUser?: API.CurrentUser | undefined }) {
     const {currentUser} = initialState;
-    console.log(currentUser)
     return {
         // 判断用户是否为超级管理员
         isAdmin: currentUser && currentUser.usr_info.role === 2,

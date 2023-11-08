@@ -10,6 +10,7 @@ export default defineConfig({
   layout: {
     favicon: 'favicon.ico',
   },
+  dva:{}, //开启dva
   routes,
   npmClient: 'npm',
 });
