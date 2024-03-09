@@ -37,6 +37,10 @@ interface UserModel {
             { call, put }: { call: any, put: any }
         ) => void;
     };
+    // 添加reducers字段
+    reducers: {
+        save: (state: any, action: any) => any;
+    };
 }
 
 const UserModel: UserModel = {
@@ -62,13 +66,18 @@ const UserModel: UserModel = {
             yield put({
                 type: 'save',
                 payload: {
-                    userList: response,
-                    currentUserList: response,
+                    userList: response.data.user_list,
+                    currentUserList: response.data.user_list,
                 },
             });
-            console.log(response);
+            // console.log(response.data.user_list);
         },
     },
+    reducers: {
+        save(state, {payload}) {
+          return {...state, ...payload}
+        }
+  },
 };
 
 export default UserModel;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PageContainer } from "@ant-design/pro-components";
-import { Card, Col, Divider, Form, Input, Modal, Row, Select, Switch, Table, Tag } from "antd";
+import { Button, Card, Col, Divider, Form, Input, Modal, Row, Select, Switch, Table, Tag } from "antd";
 import UserLink from "@/components/Button/UserLink";
 import CONFIG from "@/consts/config";
 import { UserOutlined } from "@ant-design/icons";
@@ -14,6 +14,9 @@ const UserInfo: React.FC<UserModel> = ({user, dispatch }) => {
     const [modal, setModal] = useState<boolean>(false);
     const [record, setRecord] = useState<any>({});
     const [form] = Form.useForm();
+    const [createUserModalVisible, setCreateUserModalVisible] = useState<boolean>(false);
+    const [createForm] = Form.useForm();    
+
 
     const onSwitch = (value: boolean, id: number) => {
         dispatch({
@@ -96,6 +99,8 @@ const UserInfo: React.FC<UserModel> = ({user, dispatch }) => {
 
     useEffect(() => {
         fetchUserInfo();
+        console.info(currentUserList);
+        console.info(user)
     }, []);
 
 
@@ -121,8 +126,35 @@ const UserInfo: React.FC<UserModel> = ({user, dispatch }) => {
                         </Form.Item>
                     </Form>
                 </Modal>
+                <Modal
+                    title="创建新用户"
+                    visible={createUserModalVisible}
+                    onCancel={() => setCreateUserModalVisible(false)}
+                    // onOk={handleCreateUser}
+                >
+                    <Form form={createForm} layout="vertical">
+                        <Form.Item label="姓名" name="name" rules={[{ required: true, message: '请输入姓名' }]}>
+                            <Input />
+                        </Form.Item>
+                        <Form.Item label="邮箱" name="email" rules={[{ required: true, message: '请输入邮箱' }]}>
+                            <Input />
+                        </Form.Item>
+                        <Form.Item label="密码" name="passwd" rules={[{ required: true, message: '请输入密码' }]}>
+                            <Input />
+                        </Form.Item>
+                        <Form.Item label="角色" name="role" rules={[{ required: true, message: '请选择角色' }]}>
+                            <Select>
+                                <Option value={0}>普通成员</Option>
+                                <Option value={1}>组长</Option>
+                                <Option value={2}>超级管理员</Option>
+                            </Select>
+                        </Form.Item>
+                    </Form>
+                </Modal>
                 <Row style={{ marginBottom: 12 }}>
-                    <Col span={18} />
+                    <Col span={4}>
+                        <Button type="primary" onClick={() => setCreateUserModalVisible(true)}>创建用户</Button>
+                    </Col>
                     <Col span={6}>
                         <Input.Search placeholder="输入用户邮箱或姓名" onChange={(e) => {
                             // onSearch(e.target.value);
@@ -139,5 +171,4 @@ const UserInfo: React.FC<UserModel> = ({user, dispatch }) => {
     );
 };
 
-
-export default connect(({ user }) => ({ user }))(UserInfo);
+export default connect(({ user }, dispatch) => ({user, dispatch}))(UserInfo);
